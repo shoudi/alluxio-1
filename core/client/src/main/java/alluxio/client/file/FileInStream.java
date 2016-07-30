@@ -16,19 +16,27 @@ import alluxio.annotation.PublicApi;
 import alluxio.client.AlluxioStorageType;
 import alluxio.client.BoundedStream;
 import alluxio.client.Seekable;
-import alluxio.client.block.*;
+import alluxio.client.block.BlockInStream;
+import alluxio.client.block.BlockStoreContext;
+import alluxio.client.block.BufferedBlockOutStream;
+import alluxio.client.block.LocalBlockInStream;
+import alluxio.client.block.RemoteBlockInStream;
+import alluxio.client.block.UnderStoreBlockInStream;
 import alluxio.client.file.options.InStreamOptions;
 import alluxio.client.file.policy.FileWriteLocationPolicy;
-import alluxio.exception.*;
+import alluxio.exception.AlluxioException;
+import alluxio.exception.BlockAlreadyExistsException;
+import alluxio.exception.BlockDoesNotExistException;
+import alluxio.exception.InvalidWorkerStateException;
+import alluxio.exception.PreconditionMessage;
 import alluxio.master.block.BlockId;
 import alluxio.wire.WorkerNetAddress;
 import com.google.common.base.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.annotation.concurrent.NotThreadSafe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A streaming API to read a file. This API represents a file as a stream of bytes and provides a
