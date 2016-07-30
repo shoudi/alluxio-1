@@ -16,30 +16,19 @@ import alluxio.annotation.PublicApi;
 import alluxio.client.AlluxioStorageType;
 import alluxio.client.BoundedStream;
 import alluxio.client.Seekable;
-import alluxio.client.block.BlockInStream;
-import alluxio.client.block.BlockStoreContext;
-import alluxio.client.block.BufferedBlockOutStream;
-import alluxio.client.block.LocalBlockInStream;
-import alluxio.client.block.RemoteBlockInStream;
-import alluxio.client.block.UnderStoreBlockInStream;
+import alluxio.client.block.*;
 import alluxio.client.file.options.InStreamOptions;
 import alluxio.client.file.policy.FileWriteLocationPolicy;
-import alluxio.exception.AlluxioException;
-import alluxio.exception.BlockAlreadyExistsException;
-import alluxio.exception.BlockDoesNotExistException;
-import alluxio.exception.InvalidWorkerStateException;
-import alluxio.exception.PreconditionMessage;
+import alluxio.exception.*;
 import alluxio.master.block.BlockId;
 import alluxio.wire.WorkerNetAddress;
-
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * A streaming API to read a file. This API represents a file as a stream of bytes and provides a
@@ -550,7 +539,7 @@ public class FileInStream extends InputStream implements BoundedStream, Seekable
    */
   private void seekInternalWithCachingPartiallyReadBlock(long pos) throws IOException {
     // Precompute this because mPos will be updated several times in this function.
-    boolean isInCurrentBlock = pos / mBlockSize == mPos / mBlockSize;
+    final boolean isInCurrentBlock = pos / mBlockSize == mPos / mBlockSize;
 
     // Make sure that mCurrentBlockInStream and mCurrentCacheStream is updated.
     // mPos is not updated here.
